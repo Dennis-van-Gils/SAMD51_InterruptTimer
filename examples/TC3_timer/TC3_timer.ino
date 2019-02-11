@@ -23,7 +23,7 @@ void setup() {
   
   pinMode(PIN_LED, OUTPUT);
 
-  TC.startTimer(100, myISR);
+  TC.startTimer(100000, myISR); // 100000 usec
 }
 
 void loop() {
