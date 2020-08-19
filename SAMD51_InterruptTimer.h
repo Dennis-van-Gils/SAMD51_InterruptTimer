@@ -17,6 +17,8 @@
 class TC_Timer {
   public:
     void startTimer(unsigned long period, void (*f)());
+    void stopTimer();
+    void restartTimer(unsigned long period);
     void setPeriod(unsigned long period);
 };
 

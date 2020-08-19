@@ -48,6 +48,33 @@ void TC_Timer::startTimer(unsigned long period, void (*f)()) {
   setPeriod(period);
 }
 
+void TC_Timer::stopTimer() {
+  TC3->COUNT16.CTRLA.bit.ENABLE = 0;
+}
+
+void TC_Timer::restartTimer(unsigned long period) {
+  // Enable the TC bus clock, use clock generator 0
+  GCLK->PCHCTRL[TC3_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val |
+                                   (1 << GCLK_PCHCTRL_CHEN_Pos);
+  while (GCLK->SYNCBUSY.reg > 0);
+
+  TC3->COUNT16.CTRLA.bit.ENABLE = 0;
+  
+  // Use match mode so that the timer counter resets when the count matches the
+  // compare register
+  TC3->COUNT16.WAVE.bit.WAVEGEN = TC_WAVE_WAVEGEN_MFRQ;
+  TC3_wait_for_sync();
+  
+   // Enable the compare interrupt
+  TC3->COUNT16.INTENSET.reg = 0;
+  TC3->COUNT16.INTENSET.bit.MC0 = 1;
+
+  // Enable IRQ
+  NVIC_EnableIRQ(TC3_IRQn);
+
+  setPeriod(period);
+}
+
 void TC_Timer::setPeriod(unsigned long period) {
   int prescaler;
   uint32_t TC_CTRLA_PRESCALER_DIVN;
