@@ -14,7 +14,13 @@
 #include "Arduino.h"
 #include "SAMD51_InterruptTimer.h"
 
-#define CPU_HZ 48000000
+// Adafruit M4 code (cores/arduino/startup.c) configures these clock generators:
+// 120MHz - GCLK0
+// 100MHz - GCLK2
+// 48MHz  - GCLK1
+// 12MHz  - GCLK4
+
+#define GCLK1_HZ 48000000
 #define TIMER_PRESCALER_DIV 1024
 
 void (*func1)();
@@ -24,7 +30,7 @@ static inline void TC3_wait_for_sync() {
 }
 
 void TC_Timer::startTimer(unsigned long period, void (*f)()) {
-  // Enable the TC bus clock, use clock generator 0
+  // Enable the TC bus clock, use clock generator 1
   GCLK->PCHCTRL[TC3_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val |
                                    (1 << GCLK_PCHCTRL_CHEN_Pos);
   while (GCLK->SYNCBUSY.reg > 0);
@@ -124,7 +130,7 @@ void TC_Timer::setPeriod(unsigned long period) {
   TC3->COUNT16.CTRLA.reg |= TC_CTRLA_PRESCALER_DIVN;
   TC3_wait_for_sync();
 
-  int compareValue = (int)(CPU_HZ / (prescaler/((float)period / 1000000))) - 1;
+  int compareValue = (int)(GCLK1_HZ / (prescaler/((float)period / 1000000))) - 1;
 
   // Make sure the count is in a proportional position to where it was
   // to prevent any jitter or disconnect when changing the compare value.
