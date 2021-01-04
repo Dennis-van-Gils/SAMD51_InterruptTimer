@@ -59,7 +59,7 @@ void TC_Timer::stopTimer() {
 }
 
 void TC_Timer::restartTimer(unsigned long period) {
-  // Enable the TC bus clock, use clock generator 0
+  // Enable the TC bus clock, use clock generator 1
   GCLK->PCHCTRL[TC3_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val |
                                    (1 << GCLK_PCHCTRL_CHEN_Pos);
   while (GCLK->SYNCBUSY.reg > 0);
