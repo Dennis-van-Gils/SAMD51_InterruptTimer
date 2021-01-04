@@ -8,7 +8,7 @@
   See https://github.com/EHbtj/ZeroTimer for the SAMD21 library.
 
   Dennis van Gils
-  11-02-2019
+  04-01-2021
 */
 
 #include "Arduino.h"
